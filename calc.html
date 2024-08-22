@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Calculator</title>
+    </head>
+
+    <body>
+        <h1>0</h1>
+        <p id="error"></p>
+        <form>
+            <input autofocus id="number" type="number" step="any">
+        </form>
+        <br><br>
+        <button onclick="setOperator('add')">Add</button>
+        <button onclick="setOperator('subtract')">Subtract</button>
+        <button onclick="setOperator('multiply')">Multiply</button>
+        <button onclick="setOperator('divide')">Divide</button>
+        <br><button onclick="calculate()">Equals</button>
+        <button onclick="clearAll()">Clear</button>
+    </body>
+
+    <script>
+        let currentNumber = 0;
+        let operator = null;
+        let inputNumber = null;
+        let waitingForOperand = false;
+
+        function updateDisplay() {
+            const display = document.querySelector("h1");
+            const formattedNumber = formatNumber(currentNumber);
+            display.innerHTML = formattedNumber;
+        }
+
+        function setOperator(op) {
+            operator = op;
+            inputNumber = parseFloat(document.getElementById("number").value);
+            document.getElementById("number").value = "";
+            waitingForOperand = true;
+        }
+
+        function calculate() {
+            const newNumber = parseFloat(document.getElementById("number").value);
+            const errorMessage = document.getElementById("error");
+
+            if (operator && inputNumber !== null) {
+                switch (operator) {
+                    case 'add':
+                        currentNumber = inputNumber + newNumber;
+                        break;
+                    case 'subtract':
+                        currentNumber = inputNumber - newNumber;
+                        break;
+                    case 'multiply':
+                        currentNumber = inputNumber * newNumber;
+                        break;
+                    case 'divide':
+                        if (newNumber !== 0) {
+                            currentNumber = inputNumber / newNumber;
+                        } else {
+                            errorMessage.textContent = "Error: invalid input";
+                            return;
+                        }
+                        break;
+                }
+                updateDisplay();
+                operator = null;
+                inputNumber = null;
+                document.getElementById("number").value = "";
+                errorMessage.textContent = ""; 
+            }
+        }
+
+        function clearAll() {
+            currentNumber = 0;
+            operator = null;
+            inputNumber = null;
+            document.getElementById("number").value = "";
+            updateDisplay();
+            document.getElementById("error").textContent = "";
+        }
+
+        function formatNumber(num) {
+            return num.toLocaleString('en', { maximumFractionDigits: 10 });
+        }
+
+        document.getElementById("number").addEventListener('input', function(event) {
+            if (event.target.value.startsWith('-')) {
+                event.target.value = event.target.value.slice(0, 1) + event.target.value.slice(1).replace(/^0+/, '');
+            } else {
+                event.target.value = event.target.value.replace(/^0+/, '');
+            }
+        });
+    </script>
+</html>
